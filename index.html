@@ -7,11 +7,19 @@
 body{font-family:Arial,sans-serif;background:#f4f6f9;padding:30px;max-width:800px;margin:auto}
 .card{background:#fff;border-radius:12px;box-shadow:0 2px 10px #0002;padding:20px;margin-bottom:20px}
 h1{font-size:28px;margin:0 0 20px;color:#333}
+.filter-section{margin-bottom:25px;padding:20px;background:#f8f9fa;border-radius:8px}
+.filter-buttons{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+.filter-btn{padding:8px 16px;background:#fff;border:2px solid #1a73e8;color:#1a73e8;border-radius:6px;cursor:pointer;font-weight:bold;transition:all 0.2s}
+.filter-btn:hover,.filter-btn.active{background:#1a73e8;color:#fff}
+.date-inputs{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.date-inputs label{font-weight:bold;color:#666}
+.date-inputs input{padding:8px;border:1px solid #ddd;border-radius:4px;font-family:Arial,sans-serif}
 .video-list{list-style:none;padding:0}
 .video-item{padding:15px;border-bottom:1px solid #eee;transition:background 0.2s}
 .video-item:hover{background:#f8f9fa}
 .video-item:last-child{border-bottom:none}
-.video-link{color:#1a73e8;text-decoration:none;font-weight:bold;font-size:16px}
+.video-item.hidden{display:none}
+.video-link{color:#1a73e8;text-decoration:none;font-weight:bold;font-size:16px;display:block;margin-bottom:5px}
 .video-link:hover{text-decoration:underline}
 .video-date{color:#666;font-size:14px;margin-top:5px}
 .youtube-link{color:#ff0000;text-decoration:none;font-size:14px;margin-right:10px}
@@ -21,13 +29,106 @@ h1{font-size:28px;margin:0 0 20px;color:#333}
 <body>
 <div class="card">
 <h1>📺 סרטוני מיכה</h1>
+
+<div class="filter-section">
+<div class="filter-buttons">
+<button class="filter-btn active" onclick="filterVideos('all')">הכל</button>
+<button class="filter-btn" onclick="filterVideos('today')">היום</button>
+<button class="filter-btn" onclick="filterVideos('yesterday')">אתמול</button>
+<button class="filter-btn" onclick="filterVideos('week')">השבוע</button>
+</div>
+<div class="date-inputs">
+<label>מתאריך:</label>
+<input type="date" id="dateFrom" onchange="filterByDateRange()">
+<label>עד תאריך:</label>
+<input type="date" id="dateTo" onchange="filterByDateRange()">
+</div>
+</div>
+
 <ul class="video-list">
-<li class="video-item">
+<li class="video-item" data-date="2026-10-21">
+<a href="videos/2026-10-21-tcSvUSuLNvA.html" class="video-link">ראיון כלכלי מיוחד: פרופ' ירון זליכה: האם הוא באמת יוריד את יוקר המחיה? הראיון הקשה</a>
+<a href="https://www.youtube.com/watch?v=tcSvUSuLNvA" target="_blank" rel="noopener" class="youtube-link">▶ צפה ביוטיוב</a>
+<div class="video-date">21.10.2026</div>
+</li>
+<li class="video-item" data-date="2026-10-20">
+<a href="videos/2026-10-20-plEwajaSZtk.html" class="video-link">״מרחץ דמים ביום שני״? הכלל שאף אחד לא סיפר לכם 🚨</a>
+<a href="https://www.youtube.com/watch?v=plEwajaSZtk" target="_blank" rel="noopener" class="youtube-link">▶ צפה ביוטיוב</a>
+<div class="video-date">20.10.2026</div>
+</li>
+<li class="video-item" data-date="2026-10-19">
+<a href="videos/2026-10-19-n-U3DG6NHhM.html" class="video-link">מטא, טסלה נטפליקס ועוד חברות מדווחות — והמניה ששכחתי מתהפכת 👀</a>
+<a href="https://www.youtube.com/watch?v=n-U3DG6NHhM" target="_blank" rel="noopener" class="youtube-link">▶ צפה ביוטיוב</a>
+<div class="video-date">19.10.2026</div>
+</li>
+<li class="video-item" data-date="2026-10-18">
+<a href="videos/2026-10-18-rS00qFXOPLY.html" class="video-link">🐻 המדד אומר שוק שורי. התיק שלכם אומר דובי. מי צודק?</a>
+<a href="https://www.youtube.com/watch?v=rS00qFXOPLY" target="_blank" rel="noopener" class="youtube-link">▶ צפה ביוטיוב</a>
+<div class="video-date">18.10.2026</div>
+</li>
+<li class="video-item" data-date="2026-10-17">
 <a href="videos/2026-10-17-ux9AXTTwMCg.html" class="video-link">🚨 דחוף: מה קרה ביום שישי 16.10.26 בבורסה - האם צריך למכור הכל?</a>
 <a href="https://www.youtube.com/watch?v=ux9AXTTwMCg" target="_blank" rel="noopener" class="youtube-link">▶ צפה ביוטיוב</a>
 <div class="video-date">17.10.2026</div>
 </li>
 </ul>
 </div>
+
+<script>
+function filterVideos(filter) {
+  const items = document.querySelectorAll('.video-item');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.getElementById('dateFrom').value = '';
+  document.getElementById('dateTo').value = '';
+  
+  items.forEach(item => {
+    const itemDate = new Date(item.dataset.date);
+    itemDate.setHours(0, 0, 0, 0);
+    let show = true;
+    
+    if (filter === 'today') {
+      show = itemDate.getTime() === today.getTime();
+    } else if (filter === 'yesterday') {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      show = itemDate.getTime() === yesterday.getTime();
+    } else if (filter === 'week') {
+      const weekAgo = new Date(today);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      show = itemDate >= weekAgo && itemDate <= today;
+    }
+    
+    item.classList.toggle('hidden', !show);
+  });
+}
+
+function filterByDateRange() {
+  const fromInput = document.getElementById('dateFrom').value;
+  const toInput = document.getElementById('dateTo').value;
+  
+  if (!fromInput && !toInput) return;
+  
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  
+  const items = document.querySelectorAll('.video-item');
+  const fromDate = fromInput ? new Date(fromInput) : null;
+  const toDate = toInput ? new Date(toInput) : null;
+  
+  items.forEach(item => {
+    const itemDate = new Date(item.dataset.date);
+    let show = true;
+    
+    if (fromDate && itemDate < fromDate) show = false;
+    if (toDate && itemDate > toDate) show = false;
+    
+    item.classList.toggle('hidden', !show);
+  });
+}
+</script>
 </body>
 </html>
